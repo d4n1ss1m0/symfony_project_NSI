@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% if form is defined %}
+<div class="container-fluid border-black bg-center">
+        {{ form_start(form) }}
+            <h1 style="display: none">{{user.id}}</h2>
+            <div class="my-custom-class-for-errors">
+                    {{ form_errors(form) }}
+            </div>
+            <div class="row">
+             Email пользователя </br>
+                {{ form_widget(form.email, {'value' :  user.email }) }}
+            </div>
+            <div class="row">
+                Роли </br>
+                {{ form_widget(form.roles) }}
+            </div>
+            <div class="row">
+                Пароль </br>
+                {{ form_widget(form.password}}
+            </div>
+
+
+        {{ form_end(form) }}
+    </div>
+{% endif %}
+{% endblock %}
