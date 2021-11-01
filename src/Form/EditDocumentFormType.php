@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Document;
 use App\Entity\Tags;
+use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -11,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Validator\Constraints\All;
 
 class EditDocumentFormType extends AbstractType
 {
@@ -25,30 +28,46 @@ class EditDocumentFormType extends AbstractType
             'expanded' => true,
             'label' => 'Введите тэги книги',
         )) 
-        ->add('fileName', FileType::class, [
-            'label' => 'Brochure (PDF file)',
-
-            // unmapped means that this field is not associated to any entity property
+        ->add('category', EntityType::class, array(
+            'class' => Category::class,
+            'multiple' => false,
+            'expanded' => true,
+            'label' => 'Введите категорию книги',
+        ))
+        ->add('check', ChoiceType::class, [
+            'label' => 'Перезаписать документы?',
             'mapped' => false,
-
-            // make it optional so you don't have to re-upload the PDF file
-            // every time you edit the Product details
-            'required' => false,
-            'multiple' => true,
-
-            // unmapped fields can't define their validation using annotations
-            // in the associated entity, so you can use the PHP constraint classes
-            'constraints' => [
-                new File([
-                    'maxSize' => '1024k',
-                    'mimeTypes' => [
-                        'application/pdf',
-                        'application/x-pdf',
-                    ],
-                    'mimeTypesMessage' => 'Please upload a valid PDF document',
-                ])
+            'choices'  => [
+                'Yes' => true,
+                'No' => false,
             ],
-        ])
+            ])
+            ->add('file', FileType::class, [
+                'label' => 'Brochure (PDF file)',
+
+                // unmapped means that this field is not associated to any entity property
+                'mapped' => false,
+
+                // make it optional so you don't have to re-upload the PDF file
+                // every time you edit the Product details
+                'required' => false,
+                'multiple' => true,
+
+                // unmapped fields can't define their validation using annotations
+                // in the associated entity, so you can use the PHP constraint classes
+                'constraints' => [
+                    new All([
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'application/pdf',
+                            'application/x-pdf',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid PDF document',
+                    ])
+                    ])
+                ],
+            ])
     ;
     }
 

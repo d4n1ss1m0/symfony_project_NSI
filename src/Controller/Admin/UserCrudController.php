@@ -27,12 +27,16 @@ class UserCrudController extends AbstractController
         $form = $this -> createForm(AddUserFormType::class, $user);
         $em  = $this -> getDoctrine()->getManager();
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {             
+        if ($form->isSubmitted() && $form->isValid()) { 
+            if($em -> getRepository(Users::class)->findOneBy(array('email' => $user->getEmail())))
+                {
+                    return new Response("Ошибка: Пользователь с таким email уже существует!",409);
+                }            
             $password = $passwordHasher -> hashPassword($user,$user -> getPassword());
             $user -> setPassword($password);
             $em->persist($user);
             $em->flush();
-            //return $this -> redirect('/');
+            return new Response("Успех: Пользователь добавлен",200);
        }
        $forRender['form'] = $form->createView();
        return $this->render('user_crud/addUser.html.twig',$forRender);
@@ -41,58 +45,49 @@ class UserCrudController extends AbstractController
     public function deleteUser(int $id){
         $em = $this->getDoctrine()->getManager();
         $user = $em -> getRepository(Users::class)->findOneBy(array('id' => $id));
+        if(!$user){
+            return new Response("Ошибка: Удаляемый пользователь не найден!", 404);
+        }
+        if($request->getContent() == $this->getUser()->getId()){
+            return new Response("Ошибка: Попытка удалить самого себя", 409);
+        }
+        
+        if($user->getEmail() == 'sadmin@sadmin'){
+            return new Response("Ошибка: sadmin@admin не может быть удален!", 409);
+        }
         $em->remove($user);
         $em->flush();
-        return $this -> redirect('/');
+        return new Response("Успех: Пользователь удален",200);
     }
     #[Route('/admin_panel/edit_user/{id}', name: 'edit_user_crud')]
     public function editUser(Request $request, UserPasswordHasherInterface $passwordHasher, $id):Response
     {
         $user = new Users();
-        $cUser = new Users();
 
         $em  = $this -> getDoctrine()->getManager();
-        $cUser = $em -> getRepository(Users::class)->findOneBy(array('id' => $id));
-
-        $roles = $cUser->getRoles();
-        $roles = \array_diff($roles, ["ROLE_USER"]);
-        sort($roles);
-
-        $form = $this -> createForm(EditUserFormType::class, $user,array('roles' => $roles));
-
+        $user = $em -> getRepository(Users::class)->findOneBy(array('id' => $id));
+        $form = $this -> createForm(EditUserFormType::class, $user);
+        $email = $user->getEmail();
         //$passwordHasher->needsRehash($cUser,$cUser->getPassword());
-        $forRender['user'] = $cUser;
+        $forRender['user'] = $user;
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {     
-            if($cUser){
-                    //Проверка на наличие пользователя с новым id в базе
-                    /*
-                    if($cUser->getId() != $user->getId()){
-                        if($em -> getRepository(Users::class)->findOneBy(array('id' => $user->getId())) ==null){
-                            $cUser -> setId($user -> getId());
-                        }
-                        else{
-                            throw new Exception('Пользователь с таким id уже существует!');
-                        }
-                    }
-                    else{
-                        $cUser -> setId($user -> getId());
-                    }*/
-                    if($user -> getPassword() != null){
-                        $password = $passwordHasher -> hashPassword($user,$user -> getPassword());
-                        $cUser -> setPassword($password);
-                    }
-                    $rolus = \array_diff($user->getRoles(), ["0","1","2","ROLE_USER"]);
-                    ksort($rolus);
-                    sort($rolus);
-                    $cUser -> setEmail(htmlspecialchars($user -> getEmail()));
-                    $cUser -> setRoles($rolus);
-                    $em->persist($cUser);
-                    $em->flush();
-                    //return $this->redirect('/admin/tables');
+            if($user){
+                if($em -> getRepository(Users::class)->findOneBy(array('email' => $user->getEmail())) && $email != $user->getEmail())
+                {
+                    return new Response("Ошибка: Пользователь с таким email уже существует!",409);
+                }
+                if($user -> getPassword() != ""){
+                    $password = $passwordHasher -> hashPassword($user,$user -> getPassword());
+                    $user -> setPassword($password);
+                }
+                $user -> setEmail(htmlspecialchars($user -> getEmail()));
+                $em->persist($user);
+                $em->flush();
+                return new Response("Успех: пользователь изменен",200);
             }
             else{
-                    throw new Exception('Пользователь не найден');
+                return new Response('Ошибка: Пользователь не найден',404);
             }
             
 

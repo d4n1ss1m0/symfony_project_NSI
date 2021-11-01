@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Document;
+use App\Entity\Tags;
+use App\Entity\Category;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Form\AddDocumentFormType;
 use App\Form\EditDocumentFormType;
@@ -30,47 +32,39 @@ class DocumentCrudController extends AbstractController
         $form = $this -> createForm(AddDocumentFormType::class, $document);
         $em  = $this -> getDoctrine()->getManager();
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {    
+        if ($form->isSubmitted() && $form->isValid()) {
+            if($em -> getRepository(Document::class)->findOneBy(array('name' => $document->getName())))
+            {
+                return new Response("Ошибка: Документ с таким именем уже существует!",409);
+            }      
             //работа с файлом
-            // /** @var UploadedFile $File */
             $files = $form->get('fileName')->getData();
-            //$File = $_FILES;
-            // this condition is needed because the 'brochure' field is not required
-            // so the PDF file must be processed only when a file is uploaded
             if ($files) {
                 $i = 0;
                 $newFilename = [];
                 foreach($files as $file){
                     $i++;
-                //this is needed to safely include the file name as part of the URL
-                //$safeFilename = $slugger->slug($originalFilename);
-                $newFilename[] = $document->getName().'('.$i.').'.$file->guessExtension();
-                //if( ! is_dir( $this->getParameter('directory').'/'.$document->getName() ) ) mkdir( $this->getParameter('directory').'/'.$document->getName(), 0777 );
-                // Move the file to the directory where brochures are stored
-                /*try {
-                    $files->move(
-                        $this->getParameter('directory').'/'.$document->getName().'/',
-                        $newFilename
-                    );
-                }
-                catch(FileException $e){
+                    $newFilename[] = $document->getName().'('.$i.').'.$file->guessExtension();
+                    //if( ! is_dir( $this->getParameter('directory').'/'.$document->getName() ) ) mkdir( $this->getParameter('directory').'/'.$document->getName(), 0777 );
+                    // Move the file to the directory where brochures are stored
+                    try {
+                        $file->move(
+                            $this->getParameter('directory').'/'.$document->getName().'/',
+                            $newFilename[count($newFilename)-1]
+                        );
+                    }
+                    catch(FileException $e){
 
-                }*/
-                // Move the file to the directory where brochures are stored
-                //move_uploaded_file( $file['tmp_name']['file'], $this->getParameter('directory').$newFilename);
-
-                // updates the 'brochureFilename' property to store the PDF file name
-                // instead of its contents
-                
+                    }
+                             
                 }
                 $document->setFileName($newFilename);
             }
-           // }
             
 
             $em->persist($document);
             $em->flush();
-            return $this -> redirect('/');
+            return new Response("Успех: Документ добавлен",200);
        }
        $forRender['form'] = $form->createView();
        return $this->render('document_crud/addDoc.html.twig',$forRender);
@@ -80,54 +74,100 @@ class DocumentCrudController extends AbstractController
     public function deleteDoc(int $id){
         $em = $this->getDoctrine()->getManager();
         $doc = $em -> getRepository(Document::class)->findOneBy(array('id' => $id));
+        if(!$doc){
+            return new Response("Ошибка: Удаляемый документ не найден!", 404);
+        }
+        $folder = $this->getParameter('directory').'/'.$doc->getName(); // имя новой папки
+        if ($files = glob($folder . "/*")) {
+            // удаляем по одному
+            foreach($files as $file) {
+                    // если попался файл
+                    unlink($file);
+                
+            }
+        }
+        // удаляем пустую папку
+        rmdir($folder);
         $em->remove($doc);
         $em->flush();
+        return new Response("Успех: Документ удален",200);
     }
 
     #[Route('/admin_panel/edit_doc/{id}', name: 'edit_doc_crud')]
     public function editUser(Request $request, $id):Response
     {
         $doc = new Document();
-        //$cUser = new Users();
 
         $em  = $this -> getDoctrine()->getManager();
         $doc = $em -> getRepository(Document::class)->findOneBy(array('id' => $id));
-
+        $docFiles = $doc->getFileName();
+        $docName = $doc->getName();
         $form = $this -> createForm(EditDocumentFormType::class, $doc);
-
-        //$passwordHasher->needsRehash($cUser,$cUser->getPassword());
-        //$forRender['user'] = $cUser;
+        $forRender['doc'] = $doc;
+        $doc_name = $doc->getName();
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {     
+        if ($form->isSubmitted() && $form->isValid()) {    
             if($doc){
-                    //Проверка на наличие пользователя с новым id в базе
-                    /*
-                    if($cUser->getId() != $user->getId()){
-                        if($em -> getRepository(Users::class)->findOneBy(array('id' => $user->getId())) ==null){
-                            $cUser -> setId($user -> getId());
-                        }
-                        else{
-                            throw new Exception('Пользователь с таким id уже существует!');
-                        }
+                if($doc_name != $doc->getName() && $em -> getRepository(Document::class)->findOneBy(array('name' => $doc->getName())))
+                {
+                    return new Response("Ошибка: Документ с таким названием уже существует!",409);
+                }
+                //работа с файлом
+                //Переименовываем папку и файлы внутри неё
+                if($docName != $doc->getName()){
+                    rename($this->getParameter('directory').'/'.$docName, $this->getParameter('directory').'/'.$doc->getName() );
+                    $dirFiles = scandir($this->getParameter('directory').'/'.$doc->getName());
+                    $docFiles = [];
+                    for($c = 1; $c < count($dirFiles)-1; $c++){
+                        $docFiles[] =  $doc->getName().'('.$c.').pdf';
+                        rename($this->getParameter('directory').'/'.$doc->getName().'/'.$dirFiles[$c+1],
+                                $this->getParameter('directory').'/'.$doc->getName().'/'.$doc->getName().'('.$c.').pdf' );
                     }
-                    else{
-                        $cUser -> setId($user -> getId());
+                }
+
+                $files = $form->get('file')->getData();
+                if ($files) {
+                    $i = 0;
+                    $newFilename = [];
+                    //Перезапись файлов
+                    if($form->get('check')->getData() == false){  
+                        $dirFiles = scandir($this->getParameter('directory').'/'.$doc->getName());
+                        for($c = 2; $c < count($dirFiles); $c++){
+                            
+                            $newFilename[] = $dirFiles[$c];
+                            $i++;
+                        }                     
                     }
-                    if($user -> getPassword() != null){
-                        $password = $passwordHasher -> hashPassword($user,$user -> getPassword());
-                        $cUser -> setPassword($password);
+                    foreach($files as $file){                       
+                        $i++;
+                        $newFilename[] = $doc->getName().'('.$i.').'.$file->guessExtension();
+                        //if( ! is_dir( $this->getParameter('directory').'/'.$document->getName() ) ) mkdir( $this->getParameter('directory').'/'.$document->getName(), 0777 );
+                        // Move the file to the directory where brochures are stored
+                        //try {
+                            $file->move(
+                                $this->getParameter('directory').'/'.$doc->getName().'/',
+                                $newFilename[count($newFilename)-1]
+                            );
+                        //}
+                        /*catch(FileException $e){
+
+                        }*/
+                                
                     }
-                    $rolus = \array_diff($user->getRoles(), ["0","1","2","ROLE_USER"]);
-                    ksort($rolus);
-                    sort($rolus);
-                    $cUser -> setEmail(htmlspecialchars($user -> getEmail()));
-                    $cUser -> setRoles($rolus);
-                    $em->persist($cUser);
-                    $em->flush();
-                    //return $this->redirect('/admin/tables');*/
+                    
+                    $doc->setFileName($newFilename);
+                }
+                else{
+                    $doc->setFileName($docFiles);
+                }
+                
+
+                $em->persist($doc);
+                $em->flush();
+                return new Response("Успех: Документ изменен",200);
             }
             else{
-                    throw new Exception('Пользователь не найден');
+                return new Response('Ошибка: Документ не найден',404);
             }
             
 
@@ -137,7 +177,7 @@ class DocumentCrudController extends AbstractController
         return $this->render('document_crud/editDoc.html.twig',$forRender);
     }
 
-    #[Route('/admin_panel/open_doc/{doc}/{name}', name: 'open_doc_crud')]
+    #[Route('/open_doc/{doc}/{name}', name: 'open_doc_crud')]
     public function openDoc(string $doc, string $name){
         $fileName = $this->getParameter('directory').'/'.$doc.'/'.$name;
         return new BinaryFileResponse($fileName);

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+        {% if documents is defined %}
+        {% for document in documents %}
+        <a href="/document/view/{{ document.name }}" style="text-decoration: none; color: black;">
+            <div class="container bg-light shadow p-1 mt-3 rounded w-100">
+                <h3>{{document.name}}</h3>
+                <h6 style="word-break:break-all">{{document.description}}</h6>
+                <div>Категория: {{document.category}}</div>
+                <div>
+                Тэги: {% for tag in document.tags %}
+                    <div class="badge bg-primary shadow p-1 mt-3 rounded">
+                    {{tag}}
+                    </div>
+                {% endfor %}
+                </div>
+            </div></a>
+        {% endfor %}
+        {% endif %}
+{% endblock %}

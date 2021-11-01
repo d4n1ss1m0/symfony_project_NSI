@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello DocumentCatalogController!{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+      /*window.onload=function()
+      {
+        $.ajax({
+                method: 'POST',
+                url: "/document/search"
+            }).done(function (data) {
+                $('.js-search').html(data);
+            });
+      };*/
+      function sendForm(){
+            let form =  document.querySelector('form');
+            console.dir(form.name);
+            var formdata = new FormData(form);
+                $.ajax({
+                        method: 'POST',
+                        url: "/document/search",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+           
+                    }).done(function (data) {
+                      console.dir('kekl');
+                $('.js-search').html(data);
+            });
+            
+            }
+
+
+    </script>
+{% endblock %}
+{% block body %}
+
+
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">НСИ</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/">Главная</a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link active" href="/document">Документы</a>
+        </li>        
+    </div>
+  </div>
+</nav>
+
+<div class="js-content container-fluid mt-3 d-flex justify-content-between ms-3">
+    <div class="js-form col-2" >
+    {% if form is defined %}
+    {{ form(form) }}
+    <button type="button" class="btn btn-primary"  onclick="sendForm()">Поиск</button>
+    {% endif %}
+    </div>
+    <div class="js-search col ms-3 me-3">
+        {% include 'document_catalog/searchResults.html.twig' %}
+    </div>
+</div>
+
+
+
+
+{% endblock %}

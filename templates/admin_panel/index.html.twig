@@ -53,108 +53,197 @@
                 $('.js-form').html(data);
             });
         }
-        
-
-
-
         function sendForm(){
-          let form =  document.querySelector('form');
-          console.dir(form.name);
-          //form.action = "/admin_panel/add_user";
-          //form.submit();
-          let msg = $( "form" ).serialize();
-          if(form.name == "add_user_form"){
-            $.ajax({
-                method: 'POST',
-                url: "/admin_panel/add_user",
-                data: msg
-            }).done(getUsers());
-          }else if(form.name == "edit_user_form"){
-            let id = form.querySelector('h1').innerText;
-            console.dir(id);
-            $.ajax({
-                method: 'POST',
-                url: "/admin_panel/edit_user/"+id,
-                data: msg
-            }).done(getUsers());
-          }else if(form.name == "add_tag_form"){
+            let form =  document.querySelector('form');
             console.dir(form.name);
-            var formElement = document.querySelector("form");
-            console.dir(formElement);
-            var kekw = new FormData(formElement);
-            $.ajax({
-                method: 'POST',
-                url: "/admin_panel/add_tag",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: kekw,
-                dataType : 'json'
-            }).done(getTags());
-        }else if(form.name == "add_document_form"){
-            var form1 = $( "form" );
-            var formElement = document.querySelector("form");
-            console.dir(formElement);
-            var kekl = new FormData(formElement);
-            $.ajax({
-                method: 'POST',
-                url: "/admin_panel/add_doc",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: kekl,
-                dataType : 'json',
-            }).done(setTimeout(getDocuments(),3000));
-          }else if(form.name == 'add_category_form'){
-            var form1 = $( "form" );
-            var formElement = document.querySelector("form");
-            console.dir(formElement);
-            var kekl = new FormData(formElement);
-            $.ajax({
-                method: 'POST',
-                url: "/admin_panel/add_cat",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: kekl,
-                dataType : 'json',
-            }).done(setTimeout(getCategory(),3000));
-          }
+            var formdata = new FormData(form);
+            //Конструкция ниже нужна, поскольку модальное окно одно, а используется в 2*4 случаях. Данная функция вызвывается по кнопке модального окна
+            if(form.name == "add_user_form"){ 
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/add_user",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                    }).done(setTimeout(getUsers(),3000));
+            }else if(form.name == "edit_user_form"){
+                let id = form.querySelector('h1').innerText;
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/edit_user/"+id,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                    }).done(setTimeout(getUsers(),3000));
+            }else if(form.name == "add_tag_form"){
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/add_tag",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                    }).done(setTimeout(getTags(),3000));
+            }else if(form.name == "edit_tag_form"){
+                let id = form.querySelector('h1').innerText;
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/edit_tag/"+id,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                    }).done(setTimeout(getTags(),3000));
+            }else if(form.name == "add_document_form"){
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/add_doc",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                }).done(setTimeout(getDocuments(),7000));
+            }else if(form.name == 'edit_document_form'){
+                let id = form.querySelector('h1').innerText;
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/edit_doc/"+id,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                }).done(setTimeout(getDocuments(),7000));
+            }else if(form.name == 'add_category_form'){
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/add_cat",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                }).done(setTimeout(getCategory(),3000));
+            }else if(form.name == 'edit_category_form'){
+                let id = form.querySelector('h1').innerText;
+                $.ajax({
+                        method: 'POST',
+                        url: "/admin_panel/edit_cat/"+id,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        statusCode: {
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
+                        },
+                        dataType : 'json',
+                    }).done(setTimeout(getCategory(),3000));
+            }
         }
 
         function deleteUser(id){
             $.ajax({
                 method: 'POST',
+                statusCode: {
+                            404: function(data){ showAlert(data,'danger')},
+                            409: function(data){ showAlert(data,'danger')},
+                            200: function(data){ showAlert(data,'success')}
+                        },
                 url: "/admin_panel/delete_user/"+id
-            }).done(getUsers());
+            }).done(setTimeout(getUsers(),3000));
         }
         function deleteDoc(id){
             $.ajax({
                 method: 'POST',
+                statusCode: {
+                            404: function(data){ showAlert(data,'danger')},
+                            409: function(data){ showAlert(data,'danger')},
+                            200: function(data){ showAlert(data,'success')}
+                        },
                 url: "/admin_panel/delete_doc/"+id
             }).done(setTimeout(getDocuments(),3000));
         }
         function deleteTag(id){
             $.ajax({
                 method: 'POST',
-                url: "/admin_panel/delete_tag/"+id
+                url: "/admin_panel/delete_tag/"+id,
+                statusCode: {
+                            404: function(data){ showAlert(data,'danger')},
+                            409: function(data){ showAlert(data,'danger')},
+                            200: function(data){ showAlert(data,'success')}
+                        }
             }).done(setTimeout(getTags(),3000));
         }
         function deleteCat(id){
             $.ajax({
                 method: 'POST',
+                statusCode: {
+                            404: function(data){ showAlert(data,'danger')},
+                            409: function(data){ showAlert(data,'danger')},
+                            200: function(data){ showAlert(data,'success')}
+                        },
                 url: "/admin_panel/delete_cat/"+id
             }).done(setTimeout(getCategory(),3000));
         }
-        function getEditDocForm(id) {
-          
-            console.log("Добро пожаловать в Веб-консоль");
+        function getEditForm(name, id){
             $.ajax({
                 method: 'POST',
-                url: "/admin_panel/edit_doc/"+id
+                url: "/admin_panel/"+name+"/"+id
             }).done(function (data) {
                 $('.js-form').html(data);
-            });            
+            }); 
+        }
+        
+        function showAlert(message, type)
+        {
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            $('#liveAlertPlaceholder').append(wrapper);
+            window.setTimeout(function() { $(".alert").alert('close'); }, 2000);
         }
     </script>
 {% endblock %}
@@ -165,37 +254,49 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 -->
+<div id="liveAlertPlaceholder" class="position-absolute w-100" style="z-index:1080"></div>
 
-<div>
-Admin Panel
+<div class="header container-fluid mb-3 d-flex justify-content-between shadow p-1 rounded" >
+    <div>
+    Admin Panel
+    </div>
+    <div>
+    {{app.user.email }}
+    <a href="/logout"><button type="button" class="btn btn-danger" >Выход</button></a>
+    </div>
 </div>
-<div class="row container-fluid" >
-  <div class="col-2 nav flex-column nav-pills me-3 menu-bg" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-    <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</button>
-    <button class="nav-link" id="v-pills-users-tab" data-bs-toggle="pill" data-bs-target="#v-pills-users" type="button" role="tab" aria-controls="v-pills-users" aria-selected="false" onclick="getUsers()">Users</button>
-    <button class="nav-link" id="v-pills-documents-tab" data-bs-toggle="pill" data-bs-target="#v-pills-documents" type="button" role="tab" aria-controls="v-pills-documents" aria-selected="false" onclick="getDocuments()">Documents</button>
-    <button class="nav-link" id="v-pills-tags-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tags" type="button" role="tab" aria-controls="v-pills-tags" aria-selected="false" onclick="getTags()">Tags</button>
-    <button class="nav-link" id="v-pills-category-tab" data-bs-toggle="pill" data-bs-target="#v-pills-category" type="button" role="tab" aria-controls="v-pills-category" aria-selected="false" onclick="getCategory()">Category</button>
+<div class="row container-fluid h-100" >
+  <div class="col-2 nav flex-column nav-pills menu-bg" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+    <button class="nav-link active w-100" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</button>
+    {% if app.user.roles[0] != "ROLE_MANAGER" %}
+    <button class="nav-link w-100" id="v-pills-users-tab" data-bs-toggle="pill" data-bs-target="#v-pills-users" type="button" role="tab" aria-controls="v-pills-users" aria-selected="false" onclick="getUsers()">Users</button>
+    {% endif %}
+    <button class="nav-link w-100" id="v-pills-documents-tab" data-bs-toggle="pill" data-bs-target="#v-pills-documents" type="button" role="tab" aria-controls="v-pills-documents" aria-selected="false" onclick="getDocuments()">Documents</button>
+    <button class="nav-link w-100" id="v-pills-tags-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tags" type="button" role="tab" aria-controls="v-pills-tags" aria-selected="false" onclick="getTags()">Tags</button>
+    <button class="nav-link w-100" id="v-pills-category-tab" data-bs-toggle="pill" data-bs-target="#v-pills-category" type="button" role="tab" aria-controls="v-pills-category" aria-selected="false" onclick="getCategory()">Category</button>
   </div>
   <div class="col tab-content" id="v-pills-tabContent">
-    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">...</div>
+    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+        <h1>Добро пожаловать в Admin Panel!</h1>
+        <h2>Admin Panel</h2>
+    </div>
     <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
-        <div class="js-get-users" >
+        <div class="js-get-users mt-3 p-3 mb-5" >
             {% include 'user_crud/index.html.twig' %}
         </div>
     </div>
     <div class="tab-pane fade" id="v-pills-documents" role="tabpanel" aria-labelledby="v-pills-documents-tab">
-        <div class="js-get-docs" >
+        <div class="js-get-docs mt-3 p-3 mb-5" >
             {% include 'document_crud/index.html.twig' %}
         </div>
     </div>
     <div class="tab-pane fade" id="v-pills-tags" role="tabpanel" aria-labelledby="v-pills-tags-tab">
-        <div class="js-get-tags" >
+        <div class="js-get-tags mt-3 p-3 mb-5" >
             {% include 'tags_crud/index.html.twig' %}
         </div>
     </div>
     <div class="tab-pane fade" id="v-pills-category" role="tabpanel" aria-labelledby="v-pills-category-tab">
-        <div class="js-get-cats" >
+        <div class="js-get-cats mt-3 p-3 mb-5" >
             {% include 'category_crud/index.html.twig' %}
         </div>
     </div>
@@ -206,7 +307,7 @@ Admin Panel
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Form window</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -216,7 +317,8 @@ Admin Panel
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sendForm()">OK</button>       
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sendForm()">OK</button>
+        
       </div>
     </div>
   </div>

@@ -37,7 +37,7 @@ class Document
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="documents")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
      */
     private $category;
 
@@ -86,6 +86,15 @@ class Document
     public function getTags(): Collection
     {
         return $this->tags;
+    }
+
+    public function getTagsId(): array
+    {
+        $id = [];
+        foreach($this->tags as $tag){
+            $id[] ="".$tag->getId();
+        }
+        return $id;
     }
 
     public function addTag(Tags $tag): self

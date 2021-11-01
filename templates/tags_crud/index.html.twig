@@ -14,6 +14,7 @@
 
 
 </div>
+<div class="my_table mt-3">
 <table class="table table-striped mt-3 shadow p-3 mb-5 bg-body rounded">
   <tr>
     <th>id</th>
@@ -28,10 +29,11 @@
       <td>{{ tag.id }}</td>
       <td>{{ tag.name }}</td>
       <td>{{ tag.description }}</td>
-      <td><button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="getEditForm({{tag.id}})">Primary</button></td>
+      <td><button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="getEditForm('edit_tag',{{tag.id}})">Edit</button></td>
       <td><button type="button" class="btn btn-danger" onclick="deleteTag({{tag.id}})">Delete</button></td>
     </tr>
   {% endfor %}
 {% endif %}
 </table>
+</div>
 {% endblock %}

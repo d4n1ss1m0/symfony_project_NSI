@@ -3,7 +3,7 @@
 {% if form is defined %}
 <div class="container-fluid border-black bg-center">
         {{ form_start(form) }}
-            <h1 style="display: none">{{user.id}}</h2>
+            <h1 style="display: none">{{user.id}}</h1>
             <div class="my-custom-class-for-errors">
                     {{ form_errors(form) }}
             </div>
@@ -17,7 +17,7 @@
             </div>
             <div class="row">
                 Пароль </br>
-                {{ form_widget(form.password}}
+                {{ form_widget(form.password, {'value' :""})}}
             </div>
 
 

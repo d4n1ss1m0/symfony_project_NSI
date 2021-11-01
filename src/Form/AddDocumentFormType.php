@@ -25,16 +25,16 @@ class AddDocumentFormType extends AbstractType
                 'class' => Tags::class,
                 'multiple' => true,
                 'expanded' => true,
-                'label' => 'Введите тэги книги',
+                'label' => 'Введите тэги документа',
             ))
             ->add('category', EntityType::class, array(
                 'class' => Category::class,
                 'multiple' => false,
                 'expanded' => true,
-                'label' => 'Введите категорию книги',
+                'label' => 'Введите категорию документа',
             ))
             ->add('fileName', FileType::class, [
-                'label' => 'Brochure (PDF file)',
+                'label' => 'Документ (PDF file)',
 
                 // unmapped means that this field is not associated to any entity property
                 'mapped' => false,

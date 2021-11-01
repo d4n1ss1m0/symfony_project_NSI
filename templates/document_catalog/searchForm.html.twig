@@ -1,8 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 {% if form is defined %}
-{{ form_start(form) }}
-<h1 style="display: none">{{doc.id}}</h1>
-{{form_end(form)}}
+{{ form(form) }}
 {% endif %}
 {% endblock %}

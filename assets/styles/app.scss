@@ -1,8 +1,21 @@
 @import "~bootstrap/scss/bootstrap";
+html {
+    height:93%;
+}
 body {
     background-color: lightgray;
+    height: 100%;
 }
 .menu-bg{
     background-color: $gray-300;
 }
 
+.header{
+    background-color: #007bff;
+    color: white;
+    font-size: larger;
+}
+.my_table{
+    height: 600px;
+    overflow: auto
+}

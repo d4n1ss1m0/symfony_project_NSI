@@ -16,6 +16,7 @@
 
 
 </div>
+<div class="my_table mt-3">
 <table class="table table-striped mt-3 shadow p-3 mb-5 bg-body rounded">
   <tr>
     <th>id</th>
@@ -32,18 +33,19 @@
     <tr>
       <td>{{ document.id }}</td>
       <td>{{ document.name }}</td>
-      <td>{{ document.description }}</td>
+      <td style="word-break:break-all">{{ document.description }}</td>
       <td>{{ document.tags | join(',') }}</td>
       <td>{{ document.category }}</td>
       <td>
         {% for fileName in document.fileName %}
-          <a href="admin_panel/open_doc/{{document.name}}/{{fileName}}" target="_blank">{{ fileName }}</a></br>
+          <a href="open_doc/{{document.name}}/{{fileName}}" target="_blank">{{ fileName }}</a></br>
         {% endfor %}
       </td>
-      <td><button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="getEditForm({{document.id}})">Primary</button></td>
+      <td><button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="getEditForm('edit_doc',{{document.id}})">Edit</button></td>
       <td><button type="button" class="btn btn-danger" onclick="deleteDoc({{document.id}})">Delete</button></td>
     </tr>
   {% endfor %}
 {% endif %}
 </table>
+</div>
 {% endblock %}
