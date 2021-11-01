@@ -18,16 +18,6 @@ class DocumentCatalogController extends AbstractController
     {
         $form = $this -> createForm(SearchDocumentFormType::class);
         $form->handleRequest($request);
-        /*if ($form->isSubmitted() && $form->isValid()) {
-            
-            $documents=$this->getDoctrine()->getRepository(Document::class)->searchByForm($form);
-            $forRender['documents'] = $documents;
-            
-        }
-        else{
-            $documents=$this->getDoctrine()->getRepository(Document::class)->findAll();
-            $forRender['documents'] = $documents;
-        }*/
         $documents=$this->getDoctrine()->getRepository(Document::class)->findAll();
         $forRender['documents'] = $documents;
         //dd($documents);
@@ -37,13 +27,6 @@ class DocumentCatalogController extends AbstractController
     #[Route('/document/search', name: 'document_search')]
     public function searchForm(Request $request): Response
     {
-        /*
-        $documentsNew = [];
-        $documentsNew[] = $this->getDoctrine()->getRepository(Document::class)->findOneBy(array('name' => '111'));
-        dd($documentsNew);
-        WHERE to_tsvector(d.name) || to_tsvector(d.description)
-        @@ plainto_tsquery('$q')
-        */
         $em = $this->getDoctrine()->getManager();
         $data = $request->request->all();
         $form = $data['search_document_form'];

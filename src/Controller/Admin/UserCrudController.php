@@ -68,7 +68,7 @@ class UserCrudController extends AbstractController
         $user = $em -> getRepository(Users::class)->findOneBy(array('id' => $id));
         $form = $this -> createForm(EditUserFormType::class, $user);
         $email = $user->getEmail();
-        //$passwordHasher->needsRehash($cUser,$cUser->getPassword());
+        $passwordOld = $user->getPassword();
         $forRender['user'] = $user;
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {     
@@ -77,7 +77,7 @@ class UserCrudController extends AbstractController
                 {
                     return new Response("Ошибка: Пользователь с таким email уже существует!",409);
                 }
-                if($user -> getPassword() != ""){
+                if($user -> getPassword() != $passwordOld){
                     $password = $passwordHasher -> hashPassword($user,$user -> getPassword());
                     $user -> setPassword($password);
                 }

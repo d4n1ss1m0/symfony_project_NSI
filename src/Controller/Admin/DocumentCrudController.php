@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,8 +45,6 @@ class DocumentCrudController extends AbstractController
                 foreach($files as $file){
                     $i++;
                     $newFilename[] = $document->getName().'('.$i.').'.$file->guessExtension();
-                    //if( ! is_dir( $this->getParameter('directory').'/'.$document->getName() ) ) mkdir( $this->getParameter('directory').'/'.$document->getName(), 0777 );
-                    // Move the file to the directory where brochures are stored
                     try {
                         $file->move(
                             $this->getParameter('directory').'/'.$document->getName().'/',
@@ -141,17 +139,10 @@ class DocumentCrudController extends AbstractController
                     foreach($files as $file){                       
                         $i++;
                         $newFilename[] = $doc->getName().'('.$i.').'.$file->guessExtension();
-                        //if( ! is_dir( $this->getParameter('directory').'/'.$document->getName() ) ) mkdir( $this->getParameter('directory').'/'.$document->getName(), 0777 );
-                        // Move the file to the directory where brochures are stored
-                        //try {
                             $file->move(
                                 $this->getParameter('directory').'/'.$doc->getName().'/',
                                 $newFilename[count($newFilename)-1]
                             );
-                        //}
-                        /*catch(FileException $e){
-
-                        }*/
                                 
                     }
                     

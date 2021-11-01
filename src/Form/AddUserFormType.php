@@ -23,7 +23,7 @@ class AddUserFormType extends AbstractType
             ))
             ->add('roles', ChoiceType::class, array(
                 'label' => 'Введите роль',
-                'multiple' => false,  
+                'multiple' => true,  
                 'expanded' => true,
                 'choices'=> array(
                     'Admin' => 'ROLE_ADMIN',

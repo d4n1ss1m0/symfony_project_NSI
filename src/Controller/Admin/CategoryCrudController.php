@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +20,15 @@ class CategoryCrudController extends AbstractController
         return $this->render('category_crud/index.html.twig',$forRender);
     }
     #[Route('/admin_panel/add_cat', name: 'add_cat_crud')]
-    public function addTag(Request $request):Response
+    public function addCat(Request $request):Response
     {
         $cat = new Category();
         $form = $this -> createForm(AddCategoryFormType::class, $cat);
         $em  = $this -> getDoctrine()->getManager();
+        $name = $cat->getName();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {    
-            if($em -> getRepository(Category::class)->findOneBy(array('name' => $user->getName())))
+            if($name != $cat->getName() && $em -> getRepository(Category::class)->findOneBy(array('name' => $cat->getName())))
             {
                 return new Response("Ошибка: Категория с таким именем уже существует!",409);
             }         

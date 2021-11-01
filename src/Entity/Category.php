@@ -51,7 +51,7 @@ class Category
 
     public function setName(string $name): self
     {
-        $this->CName = $name;
+        $this->name = $name;
 
         return $this;
     }
