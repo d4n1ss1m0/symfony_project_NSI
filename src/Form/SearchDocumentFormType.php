@@ -26,12 +26,6 @@ class SearchDocumentFormType extends AbstractType
             'expanded' => true,
             'label' => 'Введите тэги документа',
         ))
-        ->add('Category', EntityType::class, array(
-            'class' => Category::class,
-            'multiple' => false,
-            'expanded' => true,
-            'label' => 'Введите категорию документа',
-        ))
         ;
     }
 

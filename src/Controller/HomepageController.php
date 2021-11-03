@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\Category;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,8 +12,8 @@ class HomepageController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(): Response
     {
-        return $this->render('homepage/index.html.twig', [
-            'controller_name' => 'HomepageController',
-        ]);
+        $cats=$this->getDoctrine()->getRepository(Category::class)->findAll();
+        $forRender['categorys'] = $cats;
+        return $this->render('homepage/index.html.twig',$forRender);
     }
 }

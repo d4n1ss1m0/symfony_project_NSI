@@ -4,29 +4,55 @@
 {% block javascripts %}
     {{parent()}}
     <script>
-      /*window.onload=function()
+    var cat
+      window.onload=function()
       {
-        $.ajax({
-                method: 'POST',
-                url: "/document/search"
-            }).done(function (data) {
-                $('.js-search').html(data);
-            });
-      };*/
+        let form =  document.querySelector('form');
+        form.setAttribute('onsubmit', 'return false;');
+        cat = (new URL(window.location.href)).searchParams.get("category");
+        //form.onsubmit = function(){return false;};
+        let input =  document.querySelector('#search_document_form_Text');
+            $("#search_document_form_Text").keyup(function(event) {
+            if (event.keyCode === 13) {
+            $("#btn").click();
+          }
+        });
+
+      };
       function sendForm(){
             let form =  document.querySelector('form');
-            console.dir(form.name);
+            var s = $('form').serializeArray();
+            var tags = "";
+            var path="document?";
+            if(cat!=null){
+              path += "category="+cat+"&";
+            }
+            if(s[0].value!=""){
+              path +="text="+ s[0].value+"&";
+            }
+            
+            for (let i = 0; i < s.length; i++) { 
+              if(s[i].name=="search_document_form[Tags][]"){
+                tags+=s[i].value + "-";                 
+              }
+            }
+            if(tags!=""){
+              tags = tags.slice(0, -1);
+              path += "tags="+tags+"&";
+            }
+            path = path.slice(0, -1);
+            //s[s.length] = {name: 'search_document_form[Category]', value: cat};
+            window.history.replaceState(null,null,path);
             var formdata = new FormData(form);
+            formdata.append('Category', cat);
                 $.ajax({
                         method: 'POST',
-                        url: "/document/search",
+                        url: "/document_search",
                         cache: false,
                         contentType: false,
                         processData: false,
                         data: formdata,
-           
                     }).done(function (data) {
-                      console.dir('kekl');
                 $('.js-search').html(data);
             });
             
@@ -42,34 +68,51 @@
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/">НСИ</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="#">НСИ</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="/">Главная</a>
         </li>
-        <li class="nav-item ">
-          <a class="nav-link active" href="/document">Документы</a>
-        </li>        
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Документы
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            {% if categorys is defined %}
+            {% for cat in categorys %}
+            <li><a class="dropdown-item" href="/document?category={{cat.id}}">{{cat.name}}</a></li>
+            {% endfor %}
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/document">Все документы</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
+
 
 <div class="js-content container-fluid mt-3 d-flex justify-content-between ms-3">
     <div class="js-form col-2" >
     {% if form is defined %}
     {{ form(form) }}
-    <button type="button" class="btn btn-primary"  onclick="sendForm()">Поиск</button>
+    <button type="button" id="btn" class="btn btn-primary"  onclick="sendForm()">Поиск</button>
     {% endif %}
     </div>
     <div class="js-search col ms-3 me-3">
+        {% if documents == [] %}
+        {% include 'document_catalog/nullResult.html.twig' %}
+        {% else %}
         {% include 'document_catalog/searchResults.html.twig' %}
+        {% endif %}
     </div>
 </div>
 
