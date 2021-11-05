@@ -193,9 +193,9 @@
             $.ajax({
                 method: 'POST',
                 statusCode: {
-                            404: function(data){ showAlert(data,'danger')},
-                            409: function(data){ showAlert(data,'danger')},
-                            200: function(data){ showAlert(data,'success')}
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
                         },
                 url: "/admin_panel/delete_user/"+id
             }).done(setTimeout(getUsers(),3000));
@@ -204,9 +204,9 @@
             $.ajax({
                 method: 'POST',
                 statusCode: {
-                            404: function(data){ showAlert(data,'danger')},
-                            409: function(data){ showAlert(data,'danger')},
-                            200: function(data){ showAlert(data,'success')}
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
                         },
                 url: "/admin_panel/delete_doc/"+id
             }).done(setTimeout(getDocuments(),3000));
@@ -216,9 +216,9 @@
                 method: 'POST',
                 url: "/admin_panel/delete_tag/"+id,
                 statusCode: {
-                            404: function(data){ showAlert(data,'danger')},
-                            409: function(data){ showAlert(data,'danger')},
-                            200: function(data){ showAlert(data,'success')}
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
                         }
             }).done(setTimeout(getTags(),3000));
         }
@@ -226,9 +226,9 @@
             $.ajax({
                 method: 'POST',
                 statusCode: {
-                            404: function(data){ showAlert(data,'danger')},
-                            409: function(data){ showAlert(data,'danger')},
-                            200: function(data){ showAlert(data,'success')}
+                            404: function(data){ showAlert(data.responseText,'danger')},
+                            409: function(data){ showAlert(data.responseText,'danger')},
+                            200: function(data){ showAlert(data.responseText,'success')}
                         },
                 url: "/admin_panel/delete_cat/"+id
             }).done(setTimeout(getCategory(),3000));
