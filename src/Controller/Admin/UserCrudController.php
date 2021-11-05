@@ -28,9 +28,6 @@ class UserCrudController extends AbstractController
         $em  = $this -> getDoctrine()->getManager();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) { 
-            if(stripos($user->getEmail(),"@")){
-                return new Response("Ошибка: Указан не email",409);
-            }
             if($em -> getRepository(Users::class)->findOneBy(array('email' => $user->getEmail())))
                 {
                     return new Response("Ошибка: Пользователь с таким email уже существует!",409);
