@@ -82,16 +82,7 @@ class DocumentRepository extends ServiceEntityRepository
         $documents = $query->getResult(); 
         $documentsNew=[];
         foreach ($documents as $doc){
-            /*if(count($form['Tags'])>1){
-                dd($form['Category']);
-               if(
-                ( $form['Category'] && $doc->getTagsId() == $form['Tags'] && $doc->getCategory()->getId()==$form['Category'])||
-                (!$form['Category'] && $doc->getTagsId() == $form['Tags'])
-                ){
-                    $documentsNew[] = $doc;
-                } 
-            }*/
-            /*else */if(
+            if(
                 ($form['Tags']!=[] && $form['Category'] && in_array($form['Tags'][0],$doc->getTagsId()) && $doc->getCategory()->getId()==$form['Category'])||
                 ($form['Tags']!=[] && !$form['Category'] && in_array($form['Tags'][0],$doc->getTagsId()))||
                 ($form['Tags']==[] && $form['Category'] && $doc->getCategory()->getId()==$form['Category'])||

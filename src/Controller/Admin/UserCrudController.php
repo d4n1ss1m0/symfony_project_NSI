@@ -28,6 +28,9 @@ class UserCrudController extends AbstractController
         $em  = $this -> getDoctrine()->getManager();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) { 
+            if(stripos($user->getEmail(),"@")){
+                return new Response("Ошибка: Указан не email",409);
+            }
             if($em -> getRepository(Users::class)->findOneBy(array('email' => $user->getEmail())))
                 {
                     return new Response("Ошибка: Пользователь с таким email уже существует!",409);
@@ -42,7 +45,7 @@ class UserCrudController extends AbstractController
        return $this->render('user_crud/addUser.html.twig',$forRender);
     }
     #[Route('/admin_panel/delete_user/{id}', name: 'delete_user_crud')]
-    public function deleteUser(int $id){
+    public function deleteUser(Request $request,int $id):Response{
         $em = $this->getDoctrine()->getManager();
         $user = $em -> getRepository(Users::class)->findOneBy(array('id' => $id));
         if(!$user){
@@ -73,6 +76,9 @@ class UserCrudController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {     
             if($user){
+                if(stripos($user->getEmail(),"@")){
+                    return new Response("Ошибка: Указан не email",409);
+                }
                 if($em -> getRepository(Users::class)->findOneBy(array('email' => $user->getEmail())) && $email != $user->getEmail())
                 {
                     return new Response("Ошибка: Пользователь с таким email уже существует!",409);

@@ -57,6 +57,7 @@
             let form =  document.querySelector('form');
             console.dir(form.name);
             var formdata = new FormData(form);
+            if(form.checkValidity()){
             //Конструкция ниже нужна, поскольку модальное окно одно, а используется в 2*4 случаях. Данная функция вызвывается по кнопке модального окна
             if(form.name == "add_user_form"){ 
                 $.ajax({
@@ -182,6 +183,9 @@
                         },
                         dataType : 'json',
                     }).done(setTimeout(getCategory(),3000));
+            }
+            }else{
+                showAlert('Ошибка: Форма была неправильно заполнена','danger');
             }
         }
 

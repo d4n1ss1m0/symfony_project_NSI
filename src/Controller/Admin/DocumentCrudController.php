@@ -51,15 +51,10 @@ class DocumentCrudController extends AbstractController
                             $newFilename[count($newFilename)-1]
                         );
                     }
-                    catch(FileException $e){
-
-                    }
-                             
+                    catch(FileException $e){}                           
                 }
                 $document->setFileName($newFilename);
-            }
-            
-
+            }           
             $em->persist($document);
             $em->flush();
             return new Response("Успех: Документ добавлен",200);
